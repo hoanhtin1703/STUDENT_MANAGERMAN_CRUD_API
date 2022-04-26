@@ -5,10 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -33,13 +36,13 @@ import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
     CoordinatorLayout layout;
-    private List<Account> accountList;
     private Api_Interface apiInterface;
     private EditText user_name,password,user;
     private String muser_name,mpassword,muser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Khởi tạo các View
         getSupportActionBar().setTitle("Đăng ký tài khoản " );
         setContentView(R.layout.activity_register);
         user_name = findViewById(R.id.edt_user_name);
@@ -57,14 +60,31 @@ public class RegisterActivity extends AppCompatActivity {
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               muser_name= user_name.getText().toString().trim();
-               mpassword = password.getText().toString().trim();
-               muser= user.getText().toString().trim();
-                Register("register",muser_name,mpassword,muser);
+                if (TextUtils.isEmpty(user_name.getText().toString()) ||
+                        TextUtils.isEmpty(password.getText().toString()) ||
+                        TextUtils.isEmpty(user.getText().toString())
+                         ){
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(RegisterActivity.this);
+                    alertDialog.setMessage("Xin Mời Điền Đầy Đủ Hết Thông Tin!");
+                    alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    alertDialog.show();
+                }
+                else {
+                    muser_name = user_name.getText().toString().trim();
+                    mpassword = password.getText().toString().trim();
+                    muser = user.getText().toString().trim();
+                    Register("register", muser_name, mpassword, muser);
+                }
             }
             public void Register(String key,String user,String pass,String name){
-
+// Gọi Api interface
                 apiInterface = ApiClient.getApiClient().create(Api_Interface.class);
+                // Gọi hàm call back
                 Call<Account> call = apiInterface.register(key,user,pass,name);
 call.enqueue(new Callback<Account>() {
     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -72,30 +92,25 @@ call.enqueue(new Callback<Account>() {
     public void onResponse(Call<Account> call, Response<Account> response) {
         Log.i(RegisterActivity.class.getSimpleName(), response.toString());
         String status = response.body().getStatus();
-        String message = response.body().getResult_code();
-        Log.i("status",status);
-        Log.i("message",message);
-        if(status.equals("true")){
+        String result_code = response.body().getResult_code();
+        if(status.equals("true") && result_code.equals("0")){
            layout = findViewById(R.id.layout_id);
-
             Snackbar snackbar = Snackbar
                     .make(layout, "Đăng ký thành công", Snackbar.LENGTH_LONG);
             snackbar.show();
+
             InputMethodManager imm = (InputMethodManager)RegisterActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE); imm.hideSoftInputFromWindow(layout.getWindowToken(), 0);
+           // Xây dựng hàm đợi (delay)
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     Intent i = new Intent(RegisterActivity.this, LoginActivity.class);                        startActivity(i);
                 }
             },1000);
-//            Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
-//            startActivity(intent);
         } else {
-            Toast.makeText(RegisterActivity.this, "Khong thanh cong", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RegisterActivity.this, "Tài Khoản Này Đã Được Sử Dụng Rồi ", Toast.LENGTH_SHORT).show();
         }
     }
-
-
     @Override
     public void onFailure(Call<Account> call, Throwable t) {
 

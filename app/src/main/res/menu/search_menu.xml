@@ -8,4 +8,11 @@
     android:icon="@drawable/ic_baseline_search_24"
 app:showAsAction="always"
     app:actionViewClass="androidx.appcompat.widget.SearchView"></item>
+
+<item  android:title="Đăng Xuất"
+    android:orderInCategory="100"
+    android:id="@+id/logout"
+    >
+
+</item>
 </menu>

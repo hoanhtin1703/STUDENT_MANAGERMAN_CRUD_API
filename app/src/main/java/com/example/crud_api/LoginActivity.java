@@ -27,18 +27,14 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
-    CoordinatorLayout layout;
-
-    private Api_Interface apiInterface;
+    private Api_Interface apiInterface; // Khởi tạo API_Interface
     private EditText user_name,password;
     private String muser_name,mpassword;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_login);
-
-
+        // Khởi tạo các View
         user_name = findViewById(R.id.edt_user_name);
         password = findViewById(R.id.edt_password);
         Button btn_register = findViewById(R.id.btn_register_fromlogin);
@@ -58,7 +54,9 @@ public class LoginActivity extends AppCompatActivity {
                 login("login",muser_name,mpassword);
             }
             public void login(final String key,final String user_name,final String pass) {
+                //Gọi Api
                 apiInterface = ApiClient.getApiClient().create(Api_Interface.class);
+                // Gọi hàm call back kêt nối với server
                 Call <Account> call = apiInterface.login(key,user_name,pass);
                 call.enqueue(new Callback<Account>() {
                     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -66,12 +64,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(Call<Account> call, Response<Account> response) {
                         Log.i(RegisterActivity.class.getSimpleName(), response.toString());
                         String status = response.body().getStatus();
-
-//                        String name = response.body().getUser_name();
-//                        String pass = response.body().getPassword();
                         Log.i("status",status);
-//                        Log.i("name",name);
-//                        Log.i("pass",pass);
                         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
                         progressDialog.setMessage("Đang đăng nhập...");
                         progressDialog.show();
@@ -85,10 +78,10 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this,"Đăng nhập thành công ",Toast.LENGTH_SHORT).show();
                         }
                         else {
+                            progressDialog.dismiss();
                             Toast.makeText(LoginActivity.this,"Đăng nhập thất bại ",Toast.LENGTH_SHORT).show();
                         }
                     }
-
                     @Override
                     public void onFailure(Call<Account> call, Throwable t) {
 

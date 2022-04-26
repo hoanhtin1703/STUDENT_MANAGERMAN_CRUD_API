@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity  {
     private RecyclerView rcv;
     private RecyclerView.LayoutManager layoutManager;
     private Api_Adapter adapter;
+    private  Menu action;
     private List<Student> studentsList;
     private Api_Interface apiInterface;
     FloatingActionButton add_button;
@@ -45,19 +46,16 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        // Gọi API interface
         apiInterface = ApiClient.getApiClient().create(Api_Interface.class);
-
-
         rcv = findViewById(R.id.rcv);
-
         layoutManager = new LinearLayoutManager(this);
         rcv.setLayoutManager(layoutManager);
-
-
         listener = new Api_Adapter.RecyclerViewClickListener(){
+            // Bắt sự kiện khi click vào mỗi sinh viên
             @Override
             public void onClickRow(View view,final int position) {
+                // Gửi dữ liệu sang activity- Edit_API
                 Intent intent = new Intent(MainActivity.this, Edit_API.class);
                 intent.putExtra("id", studentsList.get(position).getId());
                 intent.putExtra("name", studentsList.get(position).getName());
@@ -67,7 +65,6 @@ public class MainActivity extends AppCompatActivity  {
                 intent.putExtra("date", studentsList.get(position).getDate());
                 intent.putExtra("image", studentsList.get(position).getImage());
                 startActivity(intent);
-                Log.i("id", String.valueOf(intent.putExtra("id", studentsList.get(position).getId())));
             }
         };
         add_button = findViewById(R.id.floating_action_button);
@@ -81,14 +78,11 @@ public class MainActivity extends AppCompatActivity  {
 
     }
     public boolean onCreateOptionsMenu(Menu menu) {
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.search_menu, menu);
-
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         MenuItem searchMenuItem = menu.findItem(R.id.search);
-
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName())
         );
@@ -100,7 +94,6 @@ public class MainActivity extends AppCompatActivity  {
                 adapter.getFilter().filter(query);
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String newText) {
 
@@ -108,27 +101,38 @@ public class MainActivity extends AppCompatActivity  {
                 return false;
             }
         });
-
         searchMenuItem.getIcon().setVisible(false, false);
-
         return true;
     }
-    public void getPets(){
-
-        Call<List<Student>> call = apiInterface.getPets();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.logout:
+                this.finish();
+                return true;
+//            case R.id.help:
+//                showHelp();
+//                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    public void getStudent(){
+//        Resquest List danh sách các sinh viên từ server
+        Call<List<Student>> call = apiInterface.getStudent();
         call.enqueue(new Callback<List<Student>>() {
             @Override
             public void onResponse(Call<List<Student>> call, Response<List<Student>> response) {
-
                 studentsList = response.body();
                 Log.i(MainActivity.class.getSimpleName(), response.body().toString());
+                // set List vào adapter
                 adapter = new Api_Adapter(studentsList, MainActivity.this,listener);
                 rcv.setAdapter(adapter);
                 Log.e("List",String.valueOf(studentsList));
                 adapter.notifyDataSetChanged();
 
             }
-
             @Override
             public void onFailure(Call<List<Student>> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "rp :"+
@@ -140,9 +144,6 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onResume() {
         super.onResume();
-        getPets();
+        getStudent();
     }
-
-
-
 }

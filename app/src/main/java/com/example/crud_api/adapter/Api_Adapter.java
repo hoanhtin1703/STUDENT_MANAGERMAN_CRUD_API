@@ -27,9 +27,8 @@ import java.util.List;
 public class Api_Adapter extends RecyclerView.Adapter<Api_Adapter.MyViewHolder> implements Filterable {
     List<Student> students,filterList;
     private Context context;
-
     public RecyclerViewClickListener mListener;
-
+    // Khởi tạo Contrustor
 public Api_Adapter(List<Student> students, Context context,RecyclerViewClickListener listener) {
     this.students = students;
     this.mListener = listener;
@@ -37,81 +36,49 @@ this.filterList = students;
     this.context = context;
 
 }
-
-
+// Khỏi tạo layout cho adapter
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         return new MyViewHolder(view, mListener);
-
     }
+    // Xây dựng dữ liệu
     @SuppressLint("CheckResult")
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Resources res = context.getResources();
-//        holder.tv_name.setText(students.get(position).getName()) = res.getString(R.string.app_name);
-//        holder.tv_student_code = context.getString(R.string.app_name);
-//        holder.tv_student_code.getText() =context.getString(R.string.app_name,holder.tv_student_code.setText(students.get(position).getStudent_code()))
-//        holder.tv_student_code.setText(students.get(position).getStudent_code()) = context.getString(R.string.app_name);
         holder.tv_name.setText(res.getString(R.string.name)+students.get(position).getName());
         holder.tv_student_code.setText(res.getString(R.string.student_code)+students.get(position).getStudent_code());
-//        holder.tv_date.setText(students.get(position).getDate());
-//
-//        holder.tv_major.setText(students.get(position).getMajor());
-
         RequestOptions requestOptions = new RequestOptions();
         requestOptions.skipMemoryCache(true);
         requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE);
-        requestOptions.placeholder(R.drawable.ic_launcher_background);
-        requestOptions.error(R.drawable.ic_launcher_background);
-
+        requestOptions.placeholder(R.drawable.images);
+        requestOptions.error(R.drawable.images);
         Glide.with(context)
                 .load(students.get(position).getImage())
                 .apply(requestOptions)
                 .into(holder.ImvStudent);
 
-//        final Boolean love = pets.get(position).getLove();
-
-//        if (love){
-//            holder.mLove.setImageResource(R.drawable.likeon);
-//        } else {
-//            holder.mLove.setImageResource(R.drawable.likeof);
-//        }
-
     }
-
-
     @Override
     public int getItemCount() {
         return students.size();
     }
-
-
-
-
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
         private RecyclerViewClickListener mListener;
-
         private ImageView ImvStudent;
         private TextView tv_name, tv_student_code;
     private RelativeLayout container;
-
         public MyViewHolder(View itemView, RecyclerViewClickListener listener) {
             super(itemView);
             ImvStudent = itemView.findViewById(R.id.imv_student);
             tv_name = itemView.findViewById(R.id.tv_name);
             tv_student_code = itemView.findViewById(R.id.tv_student_code);
-//            tv_grade = itemView.findViewById(R.id.tv_grade);
-//            tv_date = itemView.findViewById(R.id.tv_date);
-//            tv_major = itemView.findViewById(R.id.tv_major);
             mListener = listener;
             container = itemView.findViewById(R.id.container);
             container.setOnClickListener(this);
         }
-
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -122,13 +89,12 @@ this.filterList = students;
                 break;
         }
     }
-
 }
         public interface RecyclerViewClickListener {
             void onClickRow(View view, int position);
-
             }
     @Override
+    // Tìm kiếm bằng serchView
     public Filter getFilter() {
         return new Filter() {
             @Override
@@ -140,7 +106,6 @@ this.filterList = students;
                     charSequence=charSequence.toString().toUpperCase();
                     //STORE OUR FILTERED PLAYERS
                     ArrayList<Student> filteredPets=new ArrayList<>();
-
                     for (int i=0;i<filterList.size();i++)
                     {
                         //CHECK
@@ -150,24 +115,18 @@ this.filterList = students;
                             filteredPets.add(filterList.get(i));
                         }
                     }
-
                     results.count=filteredPets.size();
                     results.values=filteredPets;
-
                 }else
                 {
                     results.count=filterList.size();
                     results.values=filterList;
                 }
-
                 return results;
             }
-
-
             @Override
             protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
                 students= (ArrayList<Student>) filterResults.values;
-
                 //REFRESH
                notifyDataSetChanged();
             }
