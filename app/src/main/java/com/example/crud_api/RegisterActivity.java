@@ -43,7 +43,8 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Khởi tạo các View
-        getSupportActionBar().setTitle("Đăng ký tài khoản " );
+//        getSupportActionBar().setTitle("Đăng ký tài khoản " );
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_register);
         user_name = findViewById(R.id.edt_user_name);
         password = findViewById(R.id.edt_password);

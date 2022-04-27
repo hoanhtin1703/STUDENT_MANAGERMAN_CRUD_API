@@ -93,29 +93,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="70dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="24dp"
-            app:layout_constraintEnd_toEndOf="@+id/view2"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@drawable/ic_baseline_person_24" />
-
         <TextView
             android:id="@+id/textView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="28dp"
-            android:layout_marginEnd="32dp"
+            android:layout_marginTop="16dp"
             android:text="Đăng Ký Tài Khoản ?"
             android:textColor="#FFFFFF"
-            android:textSize="24sp"
+            android:textSize="48sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/imageView"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/view2"
             app:layout_constraintTop_toTopOf="parent" />
 

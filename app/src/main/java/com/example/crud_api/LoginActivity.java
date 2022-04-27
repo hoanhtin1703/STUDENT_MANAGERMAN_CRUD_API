@@ -34,7 +34,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        // Khởi tạo các View
+        // Khởi tạo các View'
+        getSupportActionBar().hide();
         user_name = findViewById(R.id.edt_user_name);
         password = findViewById(R.id.edt_password);
         Button btn_register = findViewById(R.id.btn_register_fromlogin);
