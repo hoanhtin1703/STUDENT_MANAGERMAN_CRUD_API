@@ -2,7 +2,6 @@ package com.example.crud_api;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -13,12 +12,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.crud_api.api.ApiClient;
 import com.example.crud_api.api.Api_Interface;
 import com.example.crud_api.model.Account;
-import com.example.crud_api.model.Student;
 
 import java.util.List;
 
@@ -30,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private Api_Interface apiInterface; // Khởi tạo API_Interface
     private EditText user_name,password;
     private String muser_name,mpassword;
+    private List<Account> studentlist;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +38,8 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         user_name = findViewById(R.id.edt_user_name);
         password = findViewById(R.id.edt_password);
-        Button btn_register = findViewById(R.id.btn_register_fromlogin);
-        btn_register.setOnClickListener(new View.OnClickListener() {
+        TextView click_to_register = findViewById(R.id.click_to_register);
+        click_to_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
             public void login(final String key,final String user_name,final String pass) {
                 //Gọi Api
                 apiInterface = ApiClient.getApiClient().create(Api_Interface.class);
-                // Gọi hàm call back kêt nối với server
+                // Gọi hàm call back kêt nối với server theo phương thức login
                 Call <Account> call = apiInterface.login(key,user_name,pass);
                 call.enqueue(new Callback<Account>() {
                     @RequiresApi(api = Build.VERSION_CODES.P)
@@ -65,19 +65,39 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(Call<Account> call, Response<Account> response) {
                         Log.i(RegisterActivity.class.getSimpleName(), response.toString());
                         String status = response.body().getStatus();
-                        Log.i("status",status);
+                        int level = response.body().getLevel();
                         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
                         progressDialog.setMessage("Đang đăng nhập...");
                         progressDialog.show();
                         if(status.equals("true")){
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Intent i = new Intent(LoginActivity.this, MainActivity.class);                        startActivity(i);
-                                }
-                            },2000);
+                            if(level ==1 ){
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Intent intent = new Intent(LoginActivity.this, Edit_API.class);
+                                        intent.putExtra("id", response.body().getUser_id());
+                                        intent.putExtra("name", response.body().getName());
+                                        intent.putExtra("student_code", response.body().getStudent_code());
+                                        intent.putExtra("grade", response.body().getGrade());
+                                        intent.putExtra("major", response.body().getMajor());
+                                        intent.putExtra("date", response.body().getDate());
+                                        intent.putExtra("image", response.body().getImage());
+                                        intent.putExtra("level",response.body().getLevel());
+                                        intent.putExtra("account_id",response.body().getId());
+                                        intent.putExtra("user_name",muser_name);
+                                        intent.putExtra("password",mpassword);
+                                        startActivity(intent);
+
+                                    }
+                                },2000);
+                            }
+                            else {
+                                Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                                startActivity(intent);
+                            }
                             Toast.makeText(LoginActivity.this,"Đăng nhập thành công ",Toast.LENGTH_SHORT).show();
                         }
+
                         else {
                             progressDialog.dismiss();
                             Toast.makeText(LoginActivity.this,"Đăng nhập thất bại ",Toast.LENGTH_SHORT).show();

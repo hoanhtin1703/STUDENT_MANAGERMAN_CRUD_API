@@ -4,7 +4,7 @@ header("Content-Type: application/json; charset=UTF-8");
 
 require_once 'config.php';
 
-$query = "SELECT *,student.id as student_id FROM student INNER JOIN account ON account.id=student.account_id WHERE level =1 ORDER BY student.id DESC " ;
+$query = "SELECT id,name,student_code,grade,major,image FROM student WHERE  account_id =";
 $result = mysqli_query($conn, $query);
 $response = array();
 
@@ -14,10 +14,7 @@ while( $row = mysqli_fetch_assoc($result) ){
 
     array_push($response, 
     array(
-        'user_name' =>$row['user_name'],
-        'password' =>$row['password'],
-        'account_id'=>$row['account_id'],
-        'id'        =>$row['student_id'], 
+        'id'        =>$row['id'], 
         'name'      =>$row['name'], 
         'student_code'=>$row['student_code'],
         'grade'     =>$row['grade'],

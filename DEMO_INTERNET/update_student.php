@@ -3,6 +3,9 @@
 require_once 'config.php';
 
 $key = $_POST['key'];
+$user_name  = $_POST['user_name'];
+$password   = $_POST['password'];
+$user_id    = $_POST['account_id'];
 $id         = $_POST['id'];
 $name       = $_POST['name'];
 $student_code   = $_POST['student_code'];
@@ -14,17 +17,16 @@ $image    = $_POST['image'];
 if ( $key == "update" ){
 
     $birth_newformat = date('Y-m-d', strtotime($date));
-
     $query = "UPDATE student SET 
                                 name ='$name'
                                 ,student_code='$student_code'
                                 ,grade='$grade'
                                 ,major='$major'
-                                ,date='$date'
+                                ,date='$birth_newformat'
                                 WHERE id = '$id' ";
-
         if ( mysqli_query($conn, $query) ){
-
+            $sql = "UPDATE account SET user_name = '$user_name' , password ='$password' WHERE id ='$user_id'";
+            mysqli_query($conn,$sql);
             if ($image == null) {
 
                 

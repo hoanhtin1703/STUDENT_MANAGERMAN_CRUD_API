@@ -57,13 +57,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Edit_API extends AppCompatActivity {
-    private EditText edt_name, edt_student_code, edt_grade, edt_major,edt_date;
+    private EditText edt_name, edt_student_code, edt_grade, edt_major,edt_date,edt_user_name,edt_password;
     private CircleImageView mPicture;
     private FloatingActionButton mFabChoosePic;
     Calendar myCalendar = Calendar.getInstance();
     private Bitmap bitmap;
-    private String name, student_code, grade, major, birth,picture;
-    private int id;
+    private String name, student_code, grade, major, birth,picture,user_name,password;
+    private int id,level,account_id;
     private Menu action;
     private Api_Interface apiInterface;
     @Override
@@ -75,6 +75,8 @@ public class Edit_API extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         // Khởi tạo các view
+        edt_user_name = findViewById(R.id.ed_std_user_name);
+        edt_password = findViewById(R.id.ed_std_password);
         edt_name = findViewById(R.id.ed_std_name);
         edt_student_code = findViewById(R.id.ed_std_code);
         edt_grade = findViewById(R.id.ed_std_grade);
@@ -100,19 +102,26 @@ public class Edit_API extends AppCompatActivity {
         });
         // Nhận dữ liệu thông qua intent từ MainAcitivy
         Intent intent = getIntent();
-        id = intent.getIntExtra("id", 0);
-        name = intent.getStringExtra("name");
-        student_code = intent.getStringExtra("student_code");
-        grade = intent.getStringExtra("grade");
-        major = intent.getStringExtra("major");
-        birth = intent.getStringExtra("date");
-        picture = intent.getStringExtra("image");
-        setDataFromIntentExtra();
+
+        user_name = intent.getStringExtra("user_name");
+        password = intent.getStringExtra("password");
+        level = intent.getIntExtra("level",0);
+    account_id = intent.getIntExtra("account_id",0);
+    id = intent.getIntExtra("id", 0);
+    name = intent.getStringExtra("name");
+    student_code = intent.getStringExtra("student_code");
+    grade = intent.getStringExtra("grade");
+    major = intent.getStringExtra("major");
+    birth = intent.getStringExtra("date");
+    picture = intent.getStringExtra("image");
+    setDataFromIntentExtra();
     }private void setDataFromIntentExtra() {
         if (id != 0) {
             // Nếu id khác 0 set các giá trị từ intent vào textView
             readMode();
-            getSupportActionBar().setTitle("Edit " + name.toString());
+            getSupportActionBar().setTitle("Chỉnh sửa " + name.toString());
+            edt_user_name.setText(user_name);
+            edt_password.setText(password);
             edt_name.setText(name);
             edt_student_code.setText(student_code);
             edt_grade.setText(grade);
@@ -137,11 +146,16 @@ public class Edit_API extends AppCompatActivity {
         inflater.inflate(R.menu.menu_editor, menu);
         action = menu;
         action.findItem(R.id.menu_save).setVisible(false);
-        if (id == 0){
+        if (id == 0) {
             action.findItem(R.id.menu_edit).setVisible(false);
             action.findItem(R.id.menu_delete).setVisible(false);
             action.findItem(R.id.menu_save).setVisible(true);
 
+        }
+        if(account_id ==1 ){
+            action.findItem(R.id.menu_edit).setVisible(true);
+            action.findItem(R.id.menu_delete).setVisible(false);
+//            action.findItem(R.id.menu_save).setVisible(true);
         }
         return true;
     }
@@ -162,14 +176,14 @@ public class Edit_API extends AppCompatActivity {
                 return true;
             case R.id.menu_save:
                 //Save
-                if (id == 0) {
+                if (id == 0 ) {
                     // Nếu như không nhập gì cả , hiển thị cho người dùng dòng thông báo
                     if (TextUtils.isEmpty(edt_name.getText().toString()) ||
                             TextUtils.isEmpty(edt_grade.getText().toString()) ||
                             TextUtils.isEmpty(edt_student_code.getText().toString()) ||
                             TextUtils.isEmpty(edt_major.getText().toString()) ){
                         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-                        alertDialog.setMessage("Please complete the field!");
+                        alertDialog.setMessage("Làm ơn hãy điền hết vào chỗ trống!");
                         alertDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -194,21 +208,23 @@ public class Edit_API extends AppCompatActivity {
                     action.findItem(R.id.menu_save).setVisible(false);
                     action.findItem(R.id.menu_delete).setVisible(true);
                     readMode();
+                    finish();
                 }
 
                 return true;
             case R.id.menu_delete:
                 // Xóa
+
                 AlertDialog.Builder dialog = new AlertDialog.Builder(Edit_API.this);
-                dialog.setMessage("Delete this pet?");
-                dialog.setPositiveButton("Yes" ,new DialogInterface.OnClickListener() {
+                dialog.setMessage("Bạn có muốn xóa sinh viên này");
+                dialog.setPositiveButton("Có" ,new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         deleteData("delete", id, picture);
                     }
                 });
-                dialog.setNegativeButton("Cencel", new DialogInterface.OnClickListener() {
+                dialog.setNegativeButton("Không", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -280,6 +296,8 @@ public class Edit_API extends AppCompatActivity {
 // Chế độ đọc
     @SuppressLint("RestrictedApi")
     void readMode(){
+        edt_user_name.setFocusableInTouchMode(false);
+        edt_password.setFocusableInTouchMode(false);
         edt_name.setFocusableInTouchMode(false);
         edt_student_code.setFocusableInTouchMode(false);
         edt_grade.setFocusableInTouchMode(false);
@@ -290,11 +308,12 @@ public class Edit_API extends AppCompatActivity {
     }
     // Thêm dữ liệu
     private void postData(final String key) {
-
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Saving...");
+        progressDialog.setMessage("Đang Lưu...");
         progressDialog.show();
         readMode();
+        String user_name = edt_user_name.getText().toString().trim();
+        String password = edt_password.getText().toString().trim();
         String name = edt_name.getText().toString().trim();
         String student_code = edt_student_code.getText().toString().trim();
         String grade = edt_grade.getText().toString().trim();
@@ -310,8 +329,8 @@ public class Edit_API extends AppCompatActivity {
         }
        // Gọi API_interface
         apiInterface = ApiClient.getApiClient().create(Api_Interface.class);
-        // Gọi hàm call back đẩy dữ liệu lên host thông qua API_interface
-        Call<Student> call = apiInterface.insertStudent( key, name, student_code, grade,major, birth, image);
+        // Gọi hàm call back đẩy dữ liệu lên host thông qua API_interface qua phương thức insert
+        Call<Student> call = apiInterface.insertStudent( key,user_name,password, name, student_code, grade,major, birth, image);
         call.enqueue(new Callback<Student>() {
             @Override
             public void onResponse(Call<Student> call, Response<Student> response) {
@@ -335,9 +354,11 @@ public class Edit_API extends AppCompatActivity {
     // Cập Nhật Dữ Liệu
     private void updateData(final String key, final int id) {
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Updating...");
+        progressDialog.setMessage("Đang Cập Nhật...");
         progressDialog.show();
         readMode();
+        String user_name = edt_user_name.getText().toString().trim();
+        String password = edt_password.getText().toString().trim();
         String name = edt_name.getText().toString().trim();
         String student_code = edt_student_code.getText().toString().trim();
         String grade = edt_grade.getText().toString().trim();
@@ -352,8 +373,8 @@ public class Edit_API extends AppCompatActivity {
         }
         // Gọi API interface
         apiInterface = ApiClient.getApiClient().create(Api_Interface.class);
-// Gọi Hàm Call Back đẩy dữ liệu lên host thông qua API interface
-        Call<Student> call = apiInterface.update_student( key,id, name, student_code, grade,major, birth, image);
+// Gọi Hàm Call Back đẩy dữ liệu lên host thông qua API interface theo phương thức update
+        Call<Student> call = apiInterface.update_student( key,id,account_id,user_name,password, name, student_code, grade,major, birth, image);
         call.enqueue(new Callback<Student>() {
             @Override
             public void onResponse(Call<Student> call, Response<Student> response) {
@@ -377,7 +398,7 @@ public class Edit_API extends AppCompatActivity {
 // Xóa dữ liệu
     private void deleteData(final String key, final int id, final String pic) {
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Deleting...");
+        progressDialog.setMessage("Đã Xóa...");
         progressDialog.show();
         readMode();
 // Gọi API interface
@@ -408,6 +429,8 @@ public class Edit_API extends AppCompatActivity {
     @SuppressLint("RestrictedApi")
     // Chế độ chỉnh sửa
     private void editMode(){
+        edt_user_name.setFocusableInTouchMode(true);
+        edt_password.setFocusableInTouchMode(true);
         edt_name.setFocusableInTouchMode(true);
         edt_grade.setFocusableInTouchMode(true);
         edt_major.setFocusableInTouchMode(true);

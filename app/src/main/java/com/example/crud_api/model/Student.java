@@ -3,8 +3,40 @@ package com.example.crud_api.model;
 import com.google.gson.annotations.SerializedName;
 
 public class Student {
+
     @SerializedName("id")
     private int id;
+
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public int getAccount_id() {
+        return account_id;
+    }
+
+    public void setAccount_id(int account_id) {
+        this.account_id = account_id;
+    }
+
+    @SerializedName("user_name")
+    private String user_name;
+    @SerializedName("password")
+    private String password;
+    @SerializedName("account_id")
+    private int account_id;
     @SerializedName("name")
     private String name;
     @SerializedName("student_code")

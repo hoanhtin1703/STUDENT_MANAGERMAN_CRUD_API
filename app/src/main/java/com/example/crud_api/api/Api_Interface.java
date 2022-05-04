@@ -20,6 +20,8 @@ public interface Api_Interface
         @POST("add_student.php")
         Call<Student> insertStudent(
                 @Field("key") String key,
+                @Field("user_name") String user_name,
+                @Field("password") String password,
                 @Field("name") String name,
                 @Field("student_code") String student_code,
                 @Field("grade") String grade,
@@ -30,8 +32,12 @@ public interface Api_Interface
         @FormUrlEncoded
 @POST("update_student.php")
 Call<Student> update_student(
+
         @Field("key") String key,
         @Field("id") int id,
+        @Field("account_id") int account_id,
+        @Field("user_name") String user_name,
+        @Field("password") String password,
         @Field("name") String name,
         @Field("student_code") String student_code,
         @Field("grade") String grade,
@@ -54,7 +60,11 @@ Call<Student> update_student(
                 @Field("key") String key,
                 @Field("user_name") String user_name,
                 @Field("password") String password,
-                @Field("name") String name);
+                @Field("name") String name,
+                @Field("student_code") String student_code,
+                @Field("grade") String grade,
+                @Field("major") String major,
+                @Field("date") String date);
         // Đăng nhập
     @FormUrlEncoded
     @POST("login.php")

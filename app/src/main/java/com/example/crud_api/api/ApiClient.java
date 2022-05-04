@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
 // Kết nối với localhost
-    private static final String BASE_URL = "http://192.168.207.232/DEMO_INTERNET/";
+    private static final String BASE_URL = "http://192.168.1.17/DEMO_INTERNET/";
     private static Retrofit retrofit;
     public static Retrofit getApiClient(){
         if (retrofit==null){

@@ -57,6 +57,9 @@ public class MainActivity extends AppCompatActivity  {
             public void onClickRow(View view,final int position) {
                 // Gửi dữ liệu sang activity- Edit_API
                 Intent intent = new Intent(MainActivity.this, Edit_API.class);
+                intent.putExtra("account_id",studentsList.get(position).getAccount_id());
+                intent.putExtra("user_name",studentsList.get(position).getUser_name());
+                intent.putExtra("password",studentsList.get(position).getPassword());
                 intent.putExtra("id", studentsList.get(position).getId());
                 intent.putExtra("name", studentsList.get(position).getName());
                 intent.putExtra("student_code", studentsList.get(position).getStudent_code());
@@ -64,6 +67,7 @@ public class MainActivity extends AppCompatActivity  {
                 intent.putExtra("major", studentsList.get(position).getMajor());
                 intent.putExtra("date", studentsList.get(position).getDate());
                 intent.putExtra("image", studentsList.get(position).getImage());
+                Log.i("id",String.valueOf(studentsList.get(position).getId()));
                 startActivity(intent);
             }
         };

@@ -6,6 +6,11 @@ $key = $_POST['key'];
 $user_name  = $_POST['user_name'];
 $password   = $_POST['password'];
 $name      = $_POST['name'];
+$student_code   = $_POST['student_code'];
+$grade      = $_POST['grade'];
+$major     = $_POST['major'];
+$date      = $_POST['date'];
+$level = 1;
 if($key == "register"){
 // echo $_SERVER["DOCUMENT_ROOT"];  // /home1/demonuts/public_html
 //including the database connection file
@@ -19,9 +24,14 @@ if($key == "register"){
                   echo json_encode(array("status"=>'true',"result_code"=>"1"));
              }
             else{
-                $query = "INSERT INTO account (user_name,password,name)
-                VALUES ('$user_name', '$password', '$name')";
+                $query = "INSERT INTO account (user_name,password,level)
+                VALUES ('$user_name', '$password', '$level')";
                       if(mysqli_query($conn,$query)){
+                        $id = mysqli_insert_id($conn);
+                        $birth_newformat = date('Y-m-d', strtotime($date));
+                        $sql =" INSERT INTO student (name,account_id,student_code,grade,major,date)
+                        VALUES ('$name','$id','$student_code', '$grade', '$major', '$birth_newformat') ";
+                        mysqli_query($conn,$sql);
                           echo json_encode(array( "status" => "true","result_code" => "0") );
                          
                        }else{
